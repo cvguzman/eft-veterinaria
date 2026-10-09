@@ -12,28 +12,30 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LoginController {
-
-    @Autowired
-    JWTAuthenticationConfig jwtAuthtenticationConfig;
-
-    @Autowired
+    private JWTAuthenticationConfig jwtAuthtenticationConfig;
     private MyUserDetailsService userDetailsService;
 
-    @PostMapping("login")
-    public String login(@RequestBody User loginRequest) {
+    @Autowired
+    public LoginController(
+            JWTAuthenticationConfig jwtAuthtenticationConfig,
+            MyUserDetailsService userDetailsService
+    ) {
+        this.jwtAuthtenticationConfig = jwtAuthtenticationConfig;
+        this.userDetailsService = userDetailsService;
+    }
 
-        /**
-        * En el ejemplo no se realiza la correcta validación del usuario
-        */
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest loginRequest) throws IllegalAccessException {
+        UserDetails userDetails =
+                userDetailsService.loadUserByUsername(loginRequest.username());
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(loginRequest.getUsername());
-
-        if (!userDetails.getPassword().equals(loginRequest.getPassword())) {
-            throw new RuntimeException("Invalid login");
+        if (!userDetails.getPassword().equals(loginRequest.password())) {
+            throw new IllegalAccessException("Invalid login");
         }
 
-        String token = jwtAuthtenticationConfig.getJWTToken(loginRequest.getUsername());
-        return token;
+        return jwtAuthtenticationConfig.getJWTToken(loginRequest.username());
     }
+
+    public record LoginRequest(String username, String password) {}
 
 }

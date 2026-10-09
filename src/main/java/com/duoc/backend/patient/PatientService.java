@@ -5,9 +5,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PatientService {
+    private PatientRepository patientRepository;
 
     @Autowired
-    private PatientRepository patientRepository;
+    public PatientService(PatientRepository patientRepository) {
+        this.patientRepository = patientRepository;
+    }
 
     public Iterable<Patient> getAllPatients() {
         return patientRepository.findAll();

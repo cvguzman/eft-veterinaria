@@ -1,28 +1,35 @@
 package com.duoc.backend.patient;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/patient")
 public class PatientController {
-
-    @Autowired
     private PatientService patientService;
 
-    @GetMapping("/register")
-    public String greetings(@RequestParam(value="name", defaultValue="World") String name) {
-        return "Hello {" + name + "}";
+    public record PatientRequest(
+            String name,
+            String species,
+            String breed,
+            int age,
+            String owner
+    ) {}
+
+    @Autowired
+    public PatientController(PatientService patientService) {
+        this.patientService = patientService;
+    }
+
+
+    @GetMapping(value = "/register", produces = MediaType.TEXT_HTML_VALUE)
+    public String greetings(
+            @RequestParam(value = "name", defaultValue = "World") String name) {
+        return "Hello {" + HtmlUtils.htmlEscape(name) + "}";
     }
 
     @GetMapping
@@ -36,7 +43,14 @@ public class PatientController {
     }
 
     @PostMapping
-    public Patient savePatient(@RequestBody Patient patient) {
+    public Patient savePatient(@RequestBody PatientRequest request) {
+        Patient patient = new Patient();
+        patient.setName(request.name());
+        patient.setSpecies(request.species());
+        patient.setBreed(request.breed());
+        patient.setAge(request.age());
+        patient.setOwner(request.owner());
+
         return patientService.savePatient(patient);
     }
 
@@ -44,9 +58,4 @@ public class PatientController {
     public void deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id);
     }
-    
 }
-
-
-
-

@@ -7,9 +7,12 @@ import java.util.List;
 
 @Service
 public class CareService {
+    private CareRepository careRepository;
 
     @Autowired
-    private CareRepository careRepository;
+    public CareService(CareRepository careRepository) {
+        this.careRepository = careRepository;
+    }
 
     // Obtener todos los servicios de cuidado
     public List<Care> getAllCares() {

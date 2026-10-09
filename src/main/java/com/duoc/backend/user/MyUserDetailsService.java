@@ -17,12 +17,15 @@ import org.slf4j.LoggerFactory;
 @Configuration
 @Service
 public class MyUserDetailsService implements UserDetailsService {
+    private UserRepository userRepository;
 
         Logger logger
         = LoggerFactory.getLogger(MyUserDetailsService.class);
 
     @Autowired
-    private UserRepository userRepository;
+    public MyUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
 
     @Override

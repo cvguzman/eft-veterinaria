@@ -8,9 +8,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/care")
 public class CareController {
+    private CareRepository careRepository;
 
     @Autowired
-    private CareRepository careRepository;
+    public CareController(CareRepository careRepository) {
+        this.careRepository = careRepository;
+    }
 
     @GetMapping
     public List<Care> getAllCares() {
@@ -23,7 +26,11 @@ public class CareController {
     }
 
     @PostMapping
-    public Care saveCare(@RequestBody Care service) {
+    public Care saveCare(@RequestBody CareRequest request) {
+        Care service = new Care("Vacuna", 10000);
+        service.setName(request.name());
+        service.setCost(request.cost());
+
         return careRepository.save(service);
     }
 
@@ -31,4 +38,7 @@ public class CareController {
     public void deleteCare(@PathVariable Long id) {
         careRepository.deleteById(id);
     }
+
+    public record CareRequest(String name, Double cost) {}
+
 }

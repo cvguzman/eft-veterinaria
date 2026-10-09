@@ -7,9 +7,12 @@ import java.util.List;
 
 @Service
 public class MedicationService {
+    private MedicationRepository medicationRepository;
 
     @Autowired
-    private MedicationRepository medicationRepository;
+    public MedicationService(MedicationRepository medicationRepository) {
+        this.medicationRepository = medicationRepository;
+    }
 
     public List<Medication> getAllMedications() {
         return (List<Medication>) medicationRepository.findAll();

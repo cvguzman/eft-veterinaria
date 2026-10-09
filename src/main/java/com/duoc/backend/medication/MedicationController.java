@@ -8,9 +8,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/medication")
 public class MedicationController {
+    private MedicationService medicationService;
 
     @Autowired
-    private MedicationService medicationService;
+    public MedicationController(MedicationService medicationService) {
+        this.medicationService = medicationService;
+    }
+
 
     @GetMapping
     public List<Medication> getAllMedications() {
@@ -23,7 +27,8 @@ public class MedicationController {
     }
 
     @PostMapping
-    public Medication saveMedication(@RequestBody Medication medication) {
+    public Medication saveMedication(@RequestBody MedicationRequest request) {
+        Medication medication = new Medication(request.name(), request.cost());
         return medicationService.saveMedication(medication);
     }
 
@@ -31,4 +36,7 @@ public class MedicationController {
     public void deleteMedication(@PathVariable Long id) {
         medicationService.deleteMedication(id);
     }
+
+    public record MedicationRequest(String name, Double cost) {}
+
 }
